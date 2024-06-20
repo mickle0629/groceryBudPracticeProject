@@ -7,10 +7,10 @@ const searchBar = document.querySelector(".search-bar__form");
 document.onload = displayItems();
 
 searchBar.addEventListener("submit", (e) => {
-  e.preventDefault();
   const data = new FormData(e.target);
   // console.log(...data.values());
   addItemToLocal(...data.values());
+  displayItems();
 })
 
 /**
@@ -18,6 +18,7 @@ searchBar.addEventListener("submit", (e) => {
  * @param {*} newItem (string) the new grocery item to be added.
  */
 function addItemToLocal(newItem) {
+  //TODO: Check if an item is already there with the same name
   //read from local storage to obtain accurate state
   readFromLocal();
   //placeholder object to store new item
@@ -36,6 +37,7 @@ function addItemToLocal(newItem) {
  * Makes sure itemsJSON is updated.
  */
 function readFromLocal() {
+  console.log("ItemJSON:", itemsJSON)
   itemsJSON.items = JSON.parse(localStorage.getItem("all-items")).items;
 }
 
@@ -46,7 +48,6 @@ function displayItems() {
   readFromLocal();
   const itemsSection = document.querySelector(".grocery-items");
   itemsSection.innerHTML = ""; //resets the itemSection div
-
   //add each item from itemsJSON into the DOM, w/ buttons for del and edit.
   itemsJSON.items.forEach(item => {
     itemsSection.innerHTML += `
@@ -57,4 +58,32 @@ function displayItems() {
     </div>
   `
   });
+}
+
+const itemDeleteBtns = document.querySelectorAll(".grocery-item-container__del-btn");
+// console.log(itemDeleteBtn);
+//add an event listener for every delete button in the DOM.
+itemDeleteBtns.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    readFromLocal();
+    const currentItemName = e.target.previousElementSibling.innerHTML;
+    console.log(currentItemName);
+    deleteItem(currentItemName);
+    displayItems();
+  })
+});
+
+function deleteItem(itemName) {
+  const indexItemRemoved = itemsJSON.items.findIndex((item) => {
+    console.log("item variable in the indexItemRemoved findindex callback:", item.itemName)
+    return item.itemName === itemName;
+  });
+
+  console.log("indexItemRemoved:", indexItemRemoved);
+  if (indexItemRemoved !== -1) {
+    itemsJSON.items.splice(indexItemRemoved, 1);
+  }
+  console.log(`ItemsJSON post-removal of ${itemName} @ index ${indexItemRemoved}:`, itemsJSON)
+  localStorage.setItem("all-items", JSON.stringify(itemsJSON));
+  location.reload()
 }
