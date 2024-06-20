@@ -1,0 +1,16 @@
+:root {
+  --app-title-font: 'Verdana';
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin: 10% 40% 10% 40%;
+  border: 1px solid red;
+}
+
+.app-title {
+  font-family: var(--app-title-font);
+}
